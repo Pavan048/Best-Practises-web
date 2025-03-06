@@ -1,5 +1,24 @@
 # Web Security Best Practices
 
+Here’s a comprehensive list of possible attacks you should prevent while developing a website, along with how JWT can be stolen and the corresponding prevention measures:
+
+| **Attack Type**          | **How JWT Can Be Stolen**                                  | **Prevention** |
+|-------------------------|----------------------------------------------------------|----------------|
+| **XSS (Cross-Site Scripting)** | Token stored in `localStorage` can be stolen by injected scripts. | Use `httpOnly` and `Secure` cookies instead of `localStorage` or `sessionStorage`. |
+| **MITM (Man-in-the-Middle Attack)** | Token sent over HTTP can be intercepted. | Use HTTPS (TLS/SSL) to encrypt data in transit. |
+| **Refresh Token Theft** | If stolen, it can be used indefinitely. | Use **refresh token rotation** and revoke old tokens after use. Store refresh tokens in `httpOnly` cookies. |
+| **Session Fixation** | If an attacker forces a victim to use a specific JWT, they can hijack their session. | Use **short-lived access tokens** and rotate refresh tokens. Revoke tokens on logout. |
+| **CSRF (Cross-Site Request Forgery)** | If JWT is stored in cookies, an attacker can use them to make authenticated requests. | Use `SameSite=Strict` cookies and implement CSRF protection. |
+| **Token Leakage via Logs** | JWTs logged in error messages or server logs can be stolen. | Avoid logging JWTs, especially in client-side code and server logs. |
+| **Brute Force Attacks on JWT** | If the JWT secret is weak, attackers can guess it. | Use a **strong secret key** for signing JWTs and prefer **RS256 over HS256**. |
+| **JWT Replay Attacks** | A stolen JWT can be reused until it expires. | Implement **JWT jti (unique ID) claims** and store used tokens in a denylist. |
+| **Unauthorized Token Modification** | If using symmetric signing (HS256), an attacker who gets the secret can forge tokens. | Use asymmetric signing (RS256) so only the server can sign tokens. |
+| **Scope Manipulation** | A user can modify JWT claims to escalate privileges. | **Validate JWT claims** on the backend and enforce proper authorization checks. |
+| **Algorithm Confusion Attacks** | If a JWT is signed with an unexpected algorithm, an attacker might exploit it. | Specify the expected algorithm (`RS256`, `ES256`, etc.) in your JWT validation logic. |
+| **Clickjacking** | A malicious site tricks users into interacting with a hidden iframe of your site. | Use `X-Frame-Options: DENY` or `Content-Security-Policy: frame-ancestors 'none';`. |
+
+Would you like a detailed breakdown of any specific attack? 🚀
+
 ## 1. **Store JWTs in HttpOnly & Secure Cookies**
 ### Why?
 - Prevents JavaScript from accessing the token, blocking XSS attacks.
